@@ -107,11 +107,30 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/tags/">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-tags-fill"></i>
-                标签
+                爱好
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/movies/">
+                    <i class="iconfont icon-books"></i>
+                    影单
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/books/">
+                    <i class="iconfont icon-books"></i>
+                    书单
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -182,20 +201,31 @@
   <div class="row mx-auto index-card">
     
     
-    <article class="col-12 col-md-12 mx-auto index-info">
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/hexoFluid/" target="_self">
+          <img src="/img/title.jpg" srcset="/img/loading.gif" alt="hexo搭建个人主页">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/hello-world/">Hello World</a>
+        <a href="/2021/hexoFluid/">hexo搭建个人主页</a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/hello-world/">
+        <a href="/2021/hexoFluid/">
           
           
             
           
-          Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick
+          
+Hexo + Fluid主题 + github page
+
+搭建个人博客
+
+
+看了网上很多有很多不同的搭建个人博客的方式,最终选择Hexo这个大众化的博客,并选了一个简洁而优雅的bluid主题.
         </a>
       </p>
 
@@ -203,7 +233,7 @@ Quick
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-01-29 08:46" pubdate>
+            <time datetime="2021-01-29 15:33" pubdate>
               2021-01-29
             </time>
           </div>

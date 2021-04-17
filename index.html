@@ -29,7 +29,7 @@
 	               	
 	        	</div>
             <h2>孟虎</h2>
-            <p class="description">在线找工作,手机号<em >13151634514</em></p>
+            <p class="description">在线求职,手机号<em>13151634514</em></p>
                		
             <ul class="contactWay">
                 <li><a href="blog/"><img src="images/blog.png" alt="blog"><p>博客</p></a></li>
@@ -37,7 +37,7 @@
                    <img src="images/wechat.png" alt="" id="wechatQR">
                 </li>
                 <li> <a href="https://github.com/menghu1994"><img src="images/github.png" alt="github"><p>github</p></a></li>
-                <li><a href="#" onclick="copy()"><img src="images/gmail.png" title="meng1037127772@gmail.com" alt="gmail"><p>Gmail</p><input type="text" value="meng1037127772@gmail.com" class="gmailLink" style="display: none;"></a></li>
+                <li><a href="#" onclick="copy()"><img src="images/gmail.png" title="meng1037127772@gmail.com" alt="gmail"><p>Gmail</p><textarea id="gmailLink" style="display: none;" value="meng1037127772@gmail.com">meng1037127772@gmail.com</textarea></li>
              </ul>
          </div>
             <div class="square" style="--i:0;"></div>
@@ -50,20 +50,11 @@
     </section>
 
     <script>
-
-        document.execCommand("Copy");
         function copy(){
-            let gmail = document.getElementsByClassName('gmailLink')[0];
-            gmail.select(); 
-              try{
-                if(document.execCommand("Copy","false",null)){
-                      alert("邮箱复制成功");  
-                    }else{
-                      alert("复制失败！");
-                    }
-                }catch(err){
-                        alert("复制错误！")
-             }
+            let e = document.getElementById('gmailLink');
+            e.select(); 
+            document.execCommand("copy")
+            
          }
     </script>
 </body>

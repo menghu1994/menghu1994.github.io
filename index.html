@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="孟虎的web前端工程师个人简历，前端开发">
+    <meta name="keywords" content="web前端，web前端个人简历，前端工程师简历，前端开发，前端外包，小程序外包，软件外包">
     <link rel="stylesheet" href="style.css">
     <title>Mail me</title>
-    <link rel="stylesheet" type="text/css" href="favicon.png">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
 </head>
 <body>
     <section>
@@ -13,25 +15,56 @@
         <div class="color"></div>
         <div class="color"></div>
         <div class="box">
+        	<div class="container">
+	            <div class="head">
+	               	<img src="images/head.jpg" class="header">
+	               	<div class="status">
+	               		<div class="subtitle">
+	               		<p>本科</p>
+	               		<p>在职</p>
+	               		<p>苏州</p>
+	               		<p>27</p>
+	               		</div>
+	               	</div>
+	               	
+	        	</div>
+            <h2>孟虎</h2>
+            <p class="description">在线找工作,手机号<em >13151634514</em></p>
+               		
+            <ul class="contactWay">
+                <li><a href="blog/"><img src="images/blog.png" alt="blog"><p>博客</p></a></li>
+                <li class="wechat"><img src="images/wechat_logo.png" alt="homepage"><p>微信</p>
+                   <img src="images/wechat.png" alt="" id="wechatQR">
+                </li>
+                <li> <a href="https://github.com/menghu1994"><img src="images/github.png" alt="github"><p>github</p></a></li>
+                <li><a href="#" onclick="copy()"><img src="images/gmail.png" title="meng1037127772@gmail.com" alt="gmail"><p>Gmail</p><input type="text" value="meng1037127772@gmail.com" class="gmailLink" style="display: none;"></a></li>
+             </ul>
+         </div>
             <div class="square" style="--i:0;"></div>
             <div class="square" style="--i:1;"></div>
             <div class="square" style="--i:2;"></div>
             <div class="square" style="--i:3;"></div>
             <div class="square" style="--i:4;"></div>
-            <div class="container">
-            		<div class="head">
-               			<img src="favicon.png">
-               		</div>
-
-                   <ul class="contactWay">
-                   	<li><img src="images/wechat_logo.png" alt="wechat"></li>
-                   	<li> <a href="blog/"><img src="images/wechat_logo.png" alt="homepage"></a></li>
-                   	<li> <a href="blog/"><img src="images/github.png" alt="github"></a></li>
-                   	<li><img src="images/gmail.png" title="meng1037127772@gmail.com" alt="gmail"></li>
-                   </ul>
-               </div> 
-
         </div>
+    </div> 
     </section>
+
+    <script>
+
+        document.execCommand("Copy");
+        function copy(){
+            let gmail = document.getElementsByClassName('gmailLink')[0];
+            gmail.select(); 
+              try{
+                if(document.execCommand("Copy","false",null)){
+                      alert("邮箱复制成功");  
+                    }else{
+                      alert("复制失败！");
+                    }
+                }catch(err){
+                        alert("复制错误！")
+             }
+         }
+    </script>
 </body>
 </html>

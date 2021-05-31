@@ -37,8 +37,10 @@
                    <img src="images/wechat.png" alt="" id="wechatQR">
                 </li>
                 <li> <a href="https://github.com/menghu1994"><img src="images/github.png" alt="github"><p>github</p></a></li>
-                <li><a href="#" onclick="copy()"><img src="images/gmail.png" title="meng1037127772@gmail.com" alt="gmail"><p>Gmail</p><textarea id="gmailLink" style="display: none;" value="meng1037127772@gmail.com">meng1037127772@gmail.com</textarea></li>
+                <li><a href="#" onclick="copy()"><img src="images/gmail.png" title="meng1037127772@gmail.com" alt="gmail"><p>Gmail</p>
+                	</li>
              </ul>
+             <input type="text" id="gmailLink" value="meng1037127772@gmail.com" style="position: fixed;left:-2400px">
          </div>
             <div class="square" style="--i:0;"></div>
             <div class="square" style="--i:1;"></div>
@@ -51,10 +53,9 @@
 
     <script>
         function copy(){
-            let e = document.getElementById('gmailLink');
-            e.select(); 
+            document.getElementById('gmailLink').select();
             document.execCommand("copy")
-            
+            alert('邮箱已复制')
          }
     </script>
 </body>

@@ -244,6 +244,17 @@ section .color:nth-child(3) {
   display: block;
 }
 
+.weddingDays {
+  font-size: 28px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, red, blue);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
 
 
 

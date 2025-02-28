@@ -3,7 +3,7 @@ name: Deploy Build to Branch
 on:
   push:
     branches:
-      - develop  # 触发部署的分支
+      - develop # 触发部署的分支
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to gh-pages
+      - name: Deploy to master
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

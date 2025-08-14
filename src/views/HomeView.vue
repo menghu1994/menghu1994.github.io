@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import application from '@/components/application.vue'
 
 const userInfo = ref({
   name: '孟虎',
@@ -17,6 +18,8 @@ const userInfo = ref({
 const age = computed(() => {
   return new Date().getFullYear() - 1994
 })
+
+const curYear = new Date().getFullYear();
 
 
 function copyTextToClipboard(text: string) {
@@ -38,7 +41,7 @@ const copy = () => {
 </script>
 
 <template>
-  <section>
+  <div class="interview">
     <div class="color"></div>
     <div class="color"></div>
     <div class="color"></div>
@@ -56,7 +59,8 @@ const copy = () => {
           </div>
         </div>
         <h2>{{ userInfo.name }}</h2>
-        <p class="description">{{ userInfo.job }}<br />手机号<em>{{ userInfo.phone }}</em></p>
+        <p class="description">{{ userInfo.job }}<br />Call Me: <a :href="'tel:' + userInfo.phone"><em>{{ userInfo.phone
+        }}</em></a></p>
 
         <ul class="contactWay">
           <li>
@@ -89,6 +93,9 @@ const copy = () => {
       <div class="square" style="--i:3;"></div>
       <div class="square" style="--i:4;"></div>
     </div>
+    <div class="apps">
+      <application></application>
+    </div>
     <!-- <div class="weddingDays">
       <span>我们已经在一起:</span>
       <span><span id="day">00</span>天</span>
@@ -96,16 +103,22 @@ const copy = () => {
       <strong><span id="minute">00</span>分</strong>
       <strong><span id="second">00</span>秒</strong>
     </div> -->
-  </section>
+    <div class="footer-copyright text-center">Copyright ©
+      <a href="https://www.mengyunyi.top/"> MENGYUNYI.TOP</a> {{ curYear }} 备案号：<a target="_blank" rel="nofollow"
+        href="https://beian.miit.gov.cn/">苏ICP备2024150994号-2</a>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
-section {
+.interview {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   background: linear-gradient(to bottom, #f1f4f9, #dff1ff);
+  overflow-y: auto;
 
   .color {
     position: absolute;
@@ -210,6 +223,17 @@ section {
   }
 }
 
+.apps {
+  width: 700px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  z-index: 1;
+}
+
 .container {
   color: #fff;
   position: relative;
@@ -227,6 +251,7 @@ section {
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   padding: 30px;
+  margin-bottom: 2rem;
 
   h2 {
     font-size: 1.5em;
@@ -252,6 +277,11 @@ section {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    a {
+      text-decoration: underline;
+      text-decoration-color: red;
+    }
   }
 
   .head {
@@ -367,6 +397,10 @@ section {
   display: block;
 }
 
+.contactWay .wechat:active #wechatQR {
+  display: block;
+}
+
 .weddingDays {
   font-size: 28px;
   position: absolute;
@@ -378,10 +412,27 @@ section {
   color: transparent;
 }
 
+.footer-copyright {
+  position: absolute;
+  bottom: 0.5rem;
+  text-align: center;
+  word-wrap: normal;
+  font-size: 0.8rem;
+  color: rgba($color: #000000, $alpha: 0.6);
+
+  a {
+    color: inherit;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 @media screen and (max-width: 767px) {
-  section {
+  .interview {
     width: 100vw;
-    height: 100vh;
+    overflow-x: hidden;
   }
 
   .box {
@@ -415,7 +466,7 @@ section {
     }
 
     &:nth-child(3) {
-      top: 10%;
+      top: -30px;
       right: 0px;
       width: 80px;
       height: 80px;
@@ -426,6 +477,7 @@ section {
       left: 10%;
       width: 50px;
       height: 50px;
+      display: none;
     }
 
     &:nth-child(5) {
@@ -433,6 +485,7 @@ section {
       left: 30%;
       width: 60px;
       height: 60px;
+      display: none;
     }
 
     &:nth-child(6) {
@@ -440,7 +493,12 @@ section {
       right: 0;
       width: 40px;
       height: 40px;
+      display: none;
     }
+  }
+
+  .footer-copyright {
+    width: 100%;
   }
 
 }

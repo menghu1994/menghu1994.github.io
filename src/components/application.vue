@@ -19,42 +19,75 @@ const itemWidth = ref(0);
 const itemCount = ref(0);
 const isPhone = ref(false);
 
+const animationDuration = ref(0);
+
+const debounce = (fn: Function, delay = 100) => {
+  let timer: number;
+  return () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(), delay) as unknown as number;
+  };
+};
+
 const handleResize = () => {
   isPhone.value = window.innerWidth <= 768;
-}
-
-const handleScroll = () => {
-  if (containerRef.value && containerRef.value.firstElementChild && isPhone.value) {
-    const firstItem = containerRef.value.firstElementChild as HTMLElement;
-    const gap = parseFloat(getComputedStyle(containerRef.value).gap) || 0;
-    itemWidth.value = firstItem.offsetWidth + gap;
-    itemCount.value = applications.value.length;
-  } else {
-    itemWidth.value = 0;
-    itemCount.value = 0;
+  if (isPhone.value) {
+    calculateItemSize();
   }
 }
 
+const calculateItemSize = () => {
+  if (containerRef.value && containerRef.value.firstElementChild) {
+    const firstItem = containerRef.value.firstElementChild as HTMLElement;
+    const gap = parseFloat(getComputedStyle(containerRef.value).gap) || 0;
+    // 优化：强制获取布局后的尺寸（避免移动端尺寸为0）
+    itemWidth.value = firstItem.getBoundingClientRect().width + gap;
+    itemCount.value = applications.value.length;
+    // 计算动画时长（5s * 数量）
+    animationDuration.value = 5 * itemCount.value;
+  } else {
+    itemWidth.value = 0;
+    itemCount.value = 0;
+    animationDuration.value = 0;
+  }
+};
+
+const handleScroll = () => {
+  calculateItemSize();
+}
+
 onMounted(async () => {
-  window.addEventListener("resize", handleResize);
+  const handleTouchMove = (e: TouchEvent) => {
+    if (isPhone.value) {
+      e.preventDefault();
+    }
+  };
+  window.addEventListener("resize", debounce(handleResize));
+  window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+  // 等待DOM完全渲染后再计算尺寸
   await nextTick();
   handleResize();
-  handleScroll();
+  // 优化：延迟计算（适配移动端DOM渲染延迟）
+  setTimeout(calculateItemSize, 200)
 });
 
 watchEffect(() => {
-  handleScroll()
+  if (isPhone.value) {
+    calculateItemSize();
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
+  window.removeEventListener("touchmove", (e) => e.preventDefault());
 })
 </script>
 
 <template>
   <div class="scroll-wrapper" v-if="applications.length">
-    <div class="app-container" ref="containerRef"
-      :style="{ '--item-width': `${itemWidth}px`, '--item-count': itemCount }">
+    <div class="app-container" ref="containerRef" v-bind="isPhone ? { 'data-animate': 'true' } : {}"
+      :style="{ '--item-width': `${itemWidth}px`, '--item-count': itemCount, 'animation-duration': `${animationDuration}s` }">
       <!-- 原始内容 -->
       <a class="app-item" :href="app.link" target="_blank" v-for="app in applications" :key="app.name">
         <img class="app-logo" loading="lazy" :src="app.link + '/favicon.ico'" :alt="app.name" width="40" height="40" />
@@ -67,7 +100,8 @@ onUnmounted(() => {
       <!-- 克隆 -->
       <template v-if="isPhone">
         <a class="app-item" :href="app.link" target="_blank" v-for="app in applications" :key="'clone-' + app.name">
-          <img class="app-logo" loading="lazy" :src="app.link + '/favicon.ico'" :alt="app.name" width="40" height="40" />
+          <img class="app-logo" loading="lazy" :src="app.link + '/favicon.ico'" :alt="app.name" width="40"
+            height="40" />
           <div class="app-content">
             <h3 class="app-header">{{ app.name }}</h3>
             <div class="app-desc">{{ app.desc }}</div>
@@ -78,19 +112,17 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @keyframes scroll-left {
   0% {
     transform: translateX(0);
   }
 
   100% {
-    transform: translateX(calc(-1 * var(--item-width) * var(--item-count)));
+    transform: translateX(-50%);
   }
 }
-</style>
 
-<style lang="scss" scoped>
 .scroll-wrapper {
   width: 100%;
   position: relative;
@@ -100,8 +132,14 @@ onUnmounted(() => {
 .app-container {
   display: inline-flex;
   gap: 1rem;
-  animation: scroll-left linear infinite;
-  animation-duration: calc(5s * var(--item-count));
+  animation: none;
+  // 新增：硬件加速（解决移动端动画卡顿/不执行）
+  transform: translateZ(0);
+  will-change: transform;
+
+  &[data-animate="true"] {
+    animation: scroll-left linear infinite;
+  }
 }
 
 a {

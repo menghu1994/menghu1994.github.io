@@ -60,7 +60,7 @@ const copy = () => {
         </div>
         <h2>{{ userInfo.name }}</h2>
         <p class="description">{{ userInfo.job }}<br />Call Me: <a :href="'tel:' + userInfo.phone"><em>{{ userInfo.phone
-        }}</em></a></p>
+              }}</em></a></p>
 
         <ul class="contactWay">
           <li>

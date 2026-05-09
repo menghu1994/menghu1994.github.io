@@ -1,187 +1,219 @@
 <script lang="ts" setup>
-import { ref, onMounted, nextTick, onUnmounted, watchEffect } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Application {
   name: string;
-  logo: string;
   link: string;
   desc: string;
+  accent: string;
 }
 
-const applications = ref<Application[]>([
-  { name: '工具集', logo: 'tool', link: 'http://129.204.224.75:38081', desc: '工具集' },
-  { name: '大屏设计器', logo: 'tool', link: 'http://129.204.224.75:38080', desc: '大屏设计器' },
-  { name: '作品设计展示', logo: 'tool', link: 'http://129.204.224.75:8090', desc: '作品设计展示' },
-]);
+const applications: Application[] = [
+  {
+    name: '工具集',
+    link: 'https://tool.mengyunyi.top',
+    desc: '常用在线工具集合',
+    accent: '#3b82f6',
+  },
+  {
+    name: '大屏设计器',
+    link: 'https://screen.mengyunyi.top',
+    desc: '可视化大屏编辑器',
+    accent: '#8b5cf6',
+  },
+  {
+    name: '作品展示',
+    link: 'https://jianwei.mengyunyi.top',
+    desc: '项目与设计作品展示',
+    accent: '#f97316',
+  },
+];
 
-const containerRef = ref<HTMLElement | null>(null);
-const itemWidth = ref(0);
-const itemCount = ref(0);
 const isPhone = ref(false);
+const iconErrorMap = ref<Record<string, boolean>>({});
 
-const animationDuration = ref(0);
+const displayApplications = computed(() =>
+  isPhone.value ? [...applications, ...applications] : applications,
+);
 
-const debounce = (fn: Function, delay = 100) => {
-  let timer: number;
-  return () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(), delay) as unknown as number;
-  };
-};
+const animationDuration = computed(() =>
+  `${Math.max(applications.length * 4, 12)}s`,
+);
 
-const handleResize = () => {
+const updateViewport = () => {
   isPhone.value = window.innerWidth <= 768;
-  if (isPhone.value) {
-    calculateItemSize();
-  }
-}
+};
 
-const calculateItemSize = () => {
-  if (containerRef.value && containerRef.value.firstElementChild) {
-    const firstItem = containerRef.value.firstElementChild as HTMLElement;
-    const gap = parseFloat(getComputedStyle(containerRef.value).gap) || 0;
-    // 优化：强制获取布局后的尺寸（避免移动端尺寸为0）
-    itemWidth.value = firstItem.getBoundingClientRect().width + gap;
-    itemCount.value = applications.value.length;
-    // 计算动画时长（5s * 数量）
-    animationDuration.value = 5 * itemCount.value;
-  } else {
-    itemWidth.value = 0;
-    itemCount.value = 0;
-    animationDuration.value = 0;
+const getFaviconUrl = (link: string) => {
+  try {
+    return `${new URL(link).origin}/favicon.ico`;
+  } catch {
+    return '';
   }
 };
 
-const handleScroll = () => {
-  calculateItemSize();
-}
+const getInitial = (name: string) => name.trim().charAt(0).toUpperCase();
 
-onMounted(async () => {
-  const handleTouchMove = (e: TouchEvent) => {
-    if (isPhone.value) {
-      e.preventDefault();
-    }
+const handleImageError = (link: string) => {
+  iconErrorMap.value = {
+    ...iconErrorMap.value,
+    [link]: true,
   };
-  window.addEventListener("resize", debounce(handleResize));
-  window.addEventListener("touchmove", handleTouchMove, { passive: false });
+};
 
-  // 等待DOM完全渲染后再计算尺寸
-  await nextTick();
-  handleResize();
-  // 优化：延迟计算（适配移动端DOM渲染延迟）
-  setTimeout(calculateItemSize, 200)
+onMounted(() => {
+  updateViewport();
+  window.addEventListener('resize', updateViewport);
 });
 
-watchEffect(() => {
-  if (isPhone.value) {
-    calculateItemSize();
-  }
-})
-
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
-  window.removeEventListener("touchmove", (e) => e.preventDefault());
-})
+  window.removeEventListener('resize', updateViewport);
+});
 </script>
 
 <template>
-  <div class="scroll-wrapper" v-if="applications.length">
-    <div class="app-container" ref="containerRef" v-bind="isPhone ? { 'data-animate': 'true' } : {}"
-      :style="{ '--item-width': `${itemWidth}px`, '--item-count': itemCount, 'animation-duration': `${animationDuration}s` }">
-      <!-- 原始内容 -->
-      <a class="app-item" :href="app.link" target="_blank" v-for="app in applications" :key="app.name">
-        <img class="app-logo" loading="lazy" :src="app.link + '/favicon.ico'" :alt="app.name" width="40" height="40" />
+  <div v-if="applications.length" class="scroll-wrapper">
+    <div
+      class="app-container"
+      :data-animate="isPhone"
+      :style="{ animationDuration }"
+    >
+      <a
+        v-for="(app, index) in displayApplications"
+        :key="`${app.link}-${index}`"
+        class="app-item"
+        :href="app.link"
+        target="_blank"
+        rel="noopener noreferrer"
+        :style="{ '--app-accent': app.accent }"
+      >
+        <div class="app-logo-wrap">
+          <img
+            v-if="getFaviconUrl(app.link) && !iconErrorMap[app.link]"
+            class="app-logo"
+            loading="lazy"
+            :src="getFaviconUrl(app.link)"
+            :alt="`${app.name} logo`"
+            width="44"
+            height="44"
+            @error="handleImageError(app.link)"
+          />
+          <div v-else class="app-logo fallback-logo" aria-hidden="true">
+            {{ getInitial(app.name) }}
+          </div>
+        </div>
+
         <div class="app-content">
           <h3 class="app-header">{{ app.name }}</h3>
-          <div class="app-desc">{{ app.desc }}</div>
+          <p class="app-desc">{{ app.desc }}</p>
         </div>
       </a>
-
-      <!-- 克隆 -->
-      <template v-if="isPhone">
-        <a class="app-item" :href="app.link" target="_blank" v-for="app in applications" :key="'clone-' + app.name">
-          <img class="app-logo" loading="lazy" :src="app.link + '/favicon.ico'" :alt="app.name" width="40"
-            height="40" />
-          <div class="app-content">
-            <h3 class="app-header">{{ app.name }}</h3>
-            <div class="app-desc">{{ app.desc }}</div>
-          </div>
-        </a>
-      </template>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 @keyframes scroll-left {
-  0% {
+  from {
     transform: translateX(0);
   }
 
-  100% {
+  to {
     transform: translateX(-50%);
   }
 }
 
 .scroll-wrapper {
   width: 100%;
-  position: relative;
-  white-space: nowrap;
+  overflow: hidden;
 }
 
 .app-container {
-  display: inline-flex;
+  display: flex;
   gap: 1rem;
-  animation: none;
-  // 新增：硬件加速（解决移动端动画卡顿/不执行）
-  transform: translateZ(0);
+  width: max-content;
   will-change: transform;
 
-  &[data-animate="true"] {
+  &[data-animate='true'] {
     animation: scroll-left linear infinite;
   }
-}
 
-a {
-  color: #4b4b4b;
-  text-decoration: none;
+  &:hover {
+    animation-play-state: paused;
+  }
 }
 
 .app-item {
-  position: relative;
-  min-width: 12rem;
-  font-size: 14px;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-width: 13.5rem;
+  padding: 1rem 1.1rem;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 
-  .app-logo {
-    position: absolute;
-    left: 20px;
-    margin-top: -2rem;
-    z-index: 10;
-    border-radius: 50%;
-    border: 1px solid rgba(49, 49, 49, 0.4);
-    padding: 4px;
-    background: white;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 36px rgba(15, 23, 42, 0.12);
+    border-color: color-mix(in srgb, var(--app-accent) 30%, white);
   }
+}
 
-  .app-content {
-    margin-top: 16px;
+.app-logo-wrap {
+  flex: 0 0 auto;
+}
 
-    .app-header {
-      font-weight: bold;
-      margin-bottom: 0.2rem;
-    }
+.app-logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  object-fit: cover;
+}
 
-    .app-desc {
-      color: #9b9b9b;
-    }
+.fallback-logo {
+  color: var(--app-accent);
+  font-size: 1rem;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--app-accent) 14%, white);
+}
+
+.app-content {
+  min-width: 0;
+}
+
+.app-header {
+  margin: 0 0 0.25rem;
+  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.app-desc {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+@media screen and (max-width: 767px) {
+  .app-item {
+    min-width: 12rem;
   }
 }
 </style>

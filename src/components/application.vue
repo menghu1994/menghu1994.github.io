@@ -32,7 +32,7 @@ const applications: Application[] = [
     accent: '#8b5cf6',
   },
   {
-    name: '作品展示',
+    name: '视频作品展示网站',
     link: 'https://jianwei.mengyunyi.top',
     desc: '项目与设计作品展示',
     stack: ['Angular', 'Nestjs'],
@@ -141,6 +141,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.875rem;
   min-width: 13.5rem;
+  max-width: 14rem;
   padding: 1rem 1.1rem;
   color: #374151;
   text-decoration: none;

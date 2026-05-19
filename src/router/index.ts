@@ -9,6 +9,11 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    {
+      path: '/sixFace',
+      name: 'introduce',
+      component: () => import('../views/sixFace.vue'),
+    },
     // {
     //   path: '/about',
     //   name: 'about',

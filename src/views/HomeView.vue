@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import application from '@/components/application.vue'
+import router from '@/router'
 
 const userInfo = ref({
   name: '孟虎',
   sex: '男',
   phone: '13151634514',
-  email: 'meng1037127772@gmail.com',
+  email: ['1037127772@qq.com', 'menghu1994@126.com', 'meng1037127772@gmail.com'],
   education: '本科',
   job: '前端工程师',
   status: '在职',
@@ -35,8 +36,16 @@ function copyTextToClipboard(text: string) {
   }
 }
 
+const navPage = (path: string) => {
+  router.push(`/${path}`)
+}
+
 const copy = () => {
-  copyTextToClipboard(userInfo.value.email)
+  copyTextToClipboard(randomVal(userInfo.value.email))
+}
+
+const randomVal = (list: string[]) => {
+  return list[Math.floor(Math.random() * list.length)]
 }
 </script>
 
@@ -80,14 +89,14 @@ const copy = () => {
             </a>
           </li>
           <li>
-            <a href="#" @click.prevent="copy()"><img src="../assets/images/gmail.png" :title="userInfo.email"
+            <a href="#" @click.prevent="copy()"><img src="../assets/images/gmail.png" :title="userInfo.email.join(', ')"
                 alt="gmail">
               <p>Gmail</p>
             </a>
           </li>
         </ul>
       </div>
-      <div class="square" style="--i:0;"></div>
+      <div class="square" style="--i:0;" @click="navPage('sixFace')"></div>
       <div class="square" style="--i:1;"></div>
       <div class="square" style="--i:2;"></div>
       <div class="square" style="--i:3;"></div>
@@ -104,7 +113,7 @@ const copy = () => {
       <strong><span id="second">00</span>秒</strong>
     </div> -->
     <div class="footer-copyright text-center">Copyright ©
-      <a href="https://www.mengyunyi.top/"> MENGYUNYI.TOP</a> {{ curYear }} 备案号：<a target="_blank" rel="nofollow"
+      <a href="https://home.mengyunyi.top/"> MENGYUNYI.TOP</a> {{ curYear }} 备案号：<a target="_blank" rel="nofollow"
         href="https://beian.miit.gov.cn/">苏ICP备2024150994号-2</a>
     </div>
   </div>
@@ -224,7 +233,7 @@ const copy = () => {
 }
 
 .apps {
-  width: 700px;
+  // width: 700px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -390,6 +399,7 @@ const copy = () => {
   left: 0;
   width: 150px;
   height: 150px;
+  z-index: 999;
   display: none;
 }
 

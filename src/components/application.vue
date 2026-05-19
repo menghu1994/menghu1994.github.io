@@ -5,26 +5,37 @@ interface Application {
   name: string;
   link: string;
   desc: string;
+  stack?: string[];
   accent: string;
 }
 
 const applications: Application[] = [
   {
+    name: '后台管理',
+    link: 'https://matero.mengyunyi.top',
+    desc: '后台管理平台, 已接入ai对话',
+    stack: ['Angular', 'Angular Material', 'Nestjs', 'Mongo'],
+    accent: '#3b82f6',
+  },
+  {
     name: '工具集',
     link: 'https://tool.mengyunyi.top',
-    desc: '常用在线工具集合',
+    desc: '常用在线工具集合, Extend Fork Project',
+    stack: ['Vue3', 'naive-ui'],
     accent: '#3b82f6',
   },
   {
     name: '大屏设计器',
     link: 'https://screen.mengyunyi.top',
-    desc: '可视化大屏编辑器',
+    desc: '可视化大屏编辑器, Fork Project',
+    stack: ['Vue3'],
     accent: '#8b5cf6',
   },
   {
     name: '作品展示',
     link: 'https://jianwei.mengyunyi.top',
     desc: '项目与设计作品展示',
+    stack: ['Angular', 'Nestjs'],
     accent: '#f97316',
   },
 ];
@@ -73,31 +84,13 @@ onUnmounted(() => {
 
 <template>
   <div v-if="applications.length" class="scroll-wrapper">
-    <div
-      class="app-container"
-      :data-animate="isPhone"
-      :style="{ animationDuration }"
-    >
-      <a
-        v-for="(app, index) in displayApplications"
-        :key="`${app.link}-${index}`"
-        class="app-item"
-        :href="app.link"
-        target="_blank"
-        rel="noopener noreferrer"
-        :style="{ '--app-accent': app.accent }"
-      >
+    <div class="app-container" :data-animate="isPhone" :style="{ animationDuration }">
+      <a v-for="(app, index) in displayApplications" :key="`${app.link}-${index}`" class="app-item" :href="app.link"
+        target="_blank" rel="noopener noreferrer" :style="{ '--app-accent': app.accent }">
         <div class="app-logo-wrap">
-          <img
-            v-if="getFaviconUrl(app.link) && !iconErrorMap[app.link]"
-            class="app-logo"
-            loading="lazy"
-            :src="getFaviconUrl(app.link)"
-            :alt="`${app.name} logo`"
-            width="44"
-            height="44"
-            @error="handleImageError(app.link)"
-          />
+          <img v-if="getFaviconUrl(app.link) && !iconErrorMap[app.link]" class="app-logo" loading="lazy"
+            :src="getFaviconUrl(app.link)" :alt="`${app.name} logo`" width="44" height="44"
+            @error="handleImageError(app.link)" />
           <div v-else class="app-logo fallback-logo" aria-hidden="true">
             {{ getInitial(app.name) }}
           </div>

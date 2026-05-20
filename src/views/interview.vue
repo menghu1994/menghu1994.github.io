@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import gsap from "gsap";
+import { SplitText } from 'gsap/SplitText';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onBeforeUnmount, onMounted } from "vue";
+
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
 let castleSVG: HTMLElement | null = null;
 let progressBar: HTMLElement | null = null;
@@ -9,6 +15,9 @@ let compassResetTimer: ReturnType<typeof setTimeout> | null = null;
 let lastScrollY = 0;
 let scrollTicking = false;
 let svgRevealed = false;
+let footerTimeline: gsap.core.Timeline | null = null;
+let footerSplitText: SplitText | null = null;
+let footerScrollTrigger: ScrollTrigger | null = null;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
@@ -96,6 +105,91 @@ const initRevealObserver = () => {
     .forEach(el => revealObserver?.observe(el));
 };
 
+const initFooterAnimation = () => {
+  const endElement = document.querySelector<HTMLElement>(".end");
+  if (!endElement) {
+    return;
+  }
+
+  gsap.set(endElement, {
+    opacity: 1
+  });
+
+  const mySplitText = new SplitText(endElement, { type: "words,chars" });
+  footerSplitText = mySplitText;
+  const chars = mySplitText.chars;
+  const gradientColors = ['#F9D371', '#F47340', '#EF2F88', '#8843F2'];
+  const getGradientColor = (index: number, total: number) =>
+    gsap.utils.interpolate(gradientColors, total > 1 ? index / (total - 1) : 0);
+
+  gsap.set(chars, {
+    display: "inline-block",
+    opacity: 0,
+    yPercent: 22,
+    transformOrigin: "center bottom"
+  });
+
+  footerTimeline = gsap.timeline({
+    paused: true,
+    repeat: -1,
+    repeatDelay: 0.35
+  });
+
+  footerTimeline.to(chars, {
+    opacity: 1,
+    yPercent: 0,
+    duration: 0.45,
+    ease: "power2.out",
+    stagger: 0.03
+  });
+  footerTimeline.to(chars, {
+    duration: 0.5,
+    scaleY: 0.6,
+    ease: "power3.out",
+    stagger: 0.04,
+    transformOrigin: 'center bottom'
+  });
+  footerTimeline.to(chars, {
+    yPercent: -20,
+    ease: "elastic",
+    stagger: 0.03,
+    duration: 0.8
+  }, 0.5);
+  footerTimeline.to(chars, {
+    scaleY: 1,
+    ease: "elastic.out(2.5, 0.2)",
+    stagger: 0.03,
+    duration: 1.5
+  }, 0.5);
+  footerTimeline.to(chars, {
+    color: (i, el, arr) => {
+      return getGradientColor(i, arr.length);
+    },
+    ease: "power2.out",
+    stagger: 0.03,
+    duration: 0.3
+  }, 0.5);
+  footerTimeline.to(chars, {
+    yPercent: 0,
+    ease: "back",
+    stagger: 0.03,
+    duration: 0.8
+  }, 0.7);
+  footerTimeline.to(chars, {
+    color: 'hsl(0,0,0)',
+    duration: 1.4,
+    stagger: 0.05
+  });
+
+  footerScrollTrigger = ScrollTrigger.create({
+    trigger: endElement,
+    start: "top 85%",
+    once: true,
+    onEnter: () => footerTimeline?.play(0)
+  });
+  ScrollTrigger.refresh();
+}
+
 onMounted(() => {
   castleSVG = document.getElementById("castleSVG");
   progressBar = document.getElementById("progressBar");
@@ -104,6 +198,7 @@ onMounted(() => {
 
   initRevealObserver();
   updateScrollEffects();
+  initFooterAnimation();
   window.addEventListener("scroll", handleScroll, { passive: true });
 });
 
@@ -116,6 +211,13 @@ onBeforeUnmount(() => {
     clearTimeout(compassResetTimer);
     compassResetTimer = null;
   }
+
+  footerTimeline?.kill();
+  footerTimeline = null;
+  footerScrollTrigger?.kill();
+  footerScrollTrigger = null;
+  footerSplitText?.revert();
+  footerSplitText = null;
 });
 </script>
 <template>
@@ -512,7 +614,9 @@ onBeforeUnmount(() => {
         </table>
       </div>
     </div>
-
+    <footer>
+      <h2 class="end">That's all folks</h2>
+    </footer>
   </div>
 </template>
 
@@ -563,6 +667,19 @@ onBeforeUnmount(() => {
     pointer-events: none;
     z-index: 0;
     opacity: 0.7;
+  }
+}
+
+.footer {
+  margin-top: 10rem;
+  text-align: center;
+  font-size: 6vw;
+  letter-spacing: 0.1em;
+  padding-bottom: 20rem;
+
+  @media (min-width: 730px) {
+    margin-top: 20rem;
+    padding-bottom: 20rem;
   }
 }
 

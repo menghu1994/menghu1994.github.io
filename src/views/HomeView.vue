@@ -69,7 +69,7 @@ const randomVal = (list: string[]) => {
         </div>
         <h2>{{ userInfo.name }}</h2>
         <p class="description">{{ userInfo.job }}<br />Call Me: <a :href="'tel:' + userInfo.phone"><em>{{ userInfo.phone
-              }}</em></a></p>
+        }}</em></a></p>
 
         <ul class="contactWay">
           <li>
@@ -97,7 +97,7 @@ const randomVal = (list: string[]) => {
         </ul>
       </div>
       <div class="square" style="--i:0;" @click="navPage('sixFace')"></div>
-      <div class="square" style="--i:1;"></div>
+      <div class="square" style="--i:1;" @click="navPage('cv')"></div>
       <div class="square" style="--i:2;"></div>
       <div class="square" style="--i:3;"></div>
       <div class="square" style="--i:4;"></div>

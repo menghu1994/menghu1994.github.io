@@ -14,6 +14,11 @@ const router = createRouter({
       name: 'introduce',
       component: () => import('../views/sixFace.vue'),
     },
+    {
+      path: '/cv',
+      name: 'introduce',
+      component: () => import('../views/interview.vue'),
+    },
     // {
     //   path: '/about',
     //   name: 'about',
